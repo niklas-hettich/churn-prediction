@@ -7,5 +7,5 @@ gcloud run deploy mindfuel-application-backend \
   --allow-unauthenticated \
   --memory 2Gi \
   --min-instances=1 \
-  --port 5000
+  --project anny-bot-448008
 

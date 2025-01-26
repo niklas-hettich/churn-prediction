@@ -7,34 +7,35 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-model = load('adaboost_model.joblib')
+model = load('randomForest.joblib')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.json
+
         
         features = np.array([[
-            data['callFailure'],
-            data['complains'],
-            data['subscriptionLength'],
-            data['chargeAmount'],
-            data['secondsOfUse'],
-            data['frequencyOfUse'],
-            data['frequencyOfSMS'],
-            data['distinctCalledNumbers'],
-            data['ageGroup'],
-            data['tariffPlan'],
-            data['status'],
+            data['motivation'],
+            data['working_independently'],
+            data['teamplayer'],
+            data['solution_oriented'],
             data['age'],
-            data['customerValue']
+            data['productivity_productive'],
+            data['productivity_unproductive'],
+            data['willingness_to_learn_ready'],
+            data['willingness_to_learn_very_ready'],
+            data['temporal_availability_low'],
+            data['temporal_availability_medium'],
         ]])
+        
+        print("features: ",features)
         
         prediction = model.predict(features)[0]
         
         return jsonify({
             'prediction': int(prediction),
-            'churn_probability': bool(prediction)
+            'hired_probability': bool(prediction)
         })
     
     except Exception as e:
@@ -48,5 +49,5 @@ def health():
 #    app.run(debug=True)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
