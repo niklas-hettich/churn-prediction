@@ -130,9 +130,44 @@ function App() {
   const [prediction, setPrediction] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedProductivity, setSelectedProductivity] = useState(0);
+  const [selectedWillingnessToLearn, setSelectedWillingnessToLearn] = useState(0);
+  const [selectedTemporalAvailability, setSelectedTemporalAvailability] = useState(0);
 
   const handleExamplePersonClick = (person: ExamplePerson) => {
-    setFormData(person.data);
+    // Create a copy of the person's data
+    const data = {...person.data};
+    
+    // Set the form data
+    setFormData(data);
+    
+    // Update the special dropdown values
+    // Set productivity value
+    if (data.productivity_unproductive === 1) {
+      setSelectedProductivity(0);
+    } else if (data.productivity_productive === 1) {
+      setSelectedProductivity(1);
+    } else {
+      setSelectedProductivity(2);
+    }
+    
+    // Set willingness_to_learn value
+    if (data.willingness_to_learn_ready === 1) {
+      setSelectedWillingnessToLearn(1);
+    } else if (data.willingness_to_learn_very_ready === 1) {
+      setSelectedWillingnessToLearn(2);
+    } else {
+      setSelectedWillingnessToLearn(0);
+    }
+    
+    // Set temporal_availability value
+    if (data.temporal_availability_low === 1) {
+      setSelectedTemporalAvailability(0);
+    } else if (data.temporal_availability_medium === 1) {
+      setSelectedTemporalAvailability(1);
+    } else {
+      setSelectedTemporalAvailability(2);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -308,6 +343,7 @@ function App() {
               <select
                 name="productivity"
                 id="productivity"
+                value={selectedProductivity}
                 onChange={handleDropdownChange}
                 className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
@@ -325,6 +361,7 @@ function App() {
               <select
                 name="temporal_availability"
                 id="temporal_availability"
+                value={selectedTemporalAvailability}
                 onChange={handleDropdownChange}
                 className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
@@ -342,6 +379,7 @@ function App() {
               <select
                 name="willingness_to_learn"
                 id="willingness_to_learn"
+                value={selectedWillingnessToLearn}
                 onChange={handleDropdownChange}
                 className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
