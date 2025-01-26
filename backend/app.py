@@ -5,7 +5,7 @@ import numpy as np
 import os
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 model = load('randomForest.joblib')
 
