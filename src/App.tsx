@@ -15,6 +15,66 @@ interface FormData {
   temporal_availability_medium: number;
 }
 
+interface ExamplePerson {
+  name: string;
+  data: FormData;
+  imagePath: string;
+}
+
+const examplePersons: ExamplePerson[] = [
+  {
+    name: "Niklas Hettich",
+    imagePath: "/images/NiklasHettich.png",
+    data: {
+      motivation: 10,
+      working_independently: 1,
+      teamplayer: 1,
+      solution_oriented: 1,
+      age: 21,
+      productivity_unproductive: 0,
+      productivity_productive: 0,
+      willingness_to_learn_ready: 0,
+      willingness_to_learn_very_ready: 1,
+      temporal_availability_low: 0,
+      temporal_availability_medium: 0,
+    }
+  },
+  {
+    name: "Nadiem",
+    imagePath: "/images/mindfuel-logo.png",
+    data: {
+      motivation: 10,
+      working_independently: 1,
+      teamplayer: 1,
+      solution_oriented: 1,
+      age: 28,
+      productivity_unproductive: 0,
+      productivity_productive: 0,
+      willingness_to_learn_ready: 0,
+      willingness_to_learn_very_ready: 1,
+      temporal_availability_low: 0,
+      temporal_availability_medium: 0,
+    }
+  },
+  {
+    name: "Homer Simpson",
+    imagePath: "/images/HomerSimpson.jpg",
+    data: {
+      motivation: 1,
+      working_independently: 0,
+      teamplayer: 1,
+      solution_oriented: 0,
+      age: 30,
+      productivity_unproductive: 1,
+      productivity_productive: 0,
+      willingness_to_learn_ready: 1,
+      willingness_to_learn_very_ready: 0,
+      temporal_availability_low: 1,
+      temporal_availability_medium: 0,
+    }
+  }
+];
+
 const initialFormData: FormData = {
   motivation: 5,
   working_independently: 0,
@@ -32,8 +92,8 @@ const initialFormData: FormData = {
 const dropdownOptions: { [key: string]: { label: string; value: number }[] } = {
   motivation: [
     { label: 'Low', value: 1 },
-    { label: 'Medium', value: 3 },
-    { label: 'High', value: 5 },
+    { label: 'Medium', value: 5 },
+    { label: 'High', value: 10 },
   ],
   working_independently: [
     { label: 'No', value: 0 },
@@ -70,6 +130,10 @@ function App() {
   const [prediction, setPrediction] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleExamplePersonClick = (person: ExamplePerson) => {
+    setFormData(person.data);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,31 +234,62 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Hired Prediction</h1>
-          <p className="mt-2 text-sm text-gray-600">
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Hired Prediction</h1>
+          <p className="text-lg text-gray-600">
             Enter application data to predict hiring probability
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="rounded-md shadow-sm -space-y-px">
+        <div className="mb-12">
+          <h2 className="text-2xl font-medium text-gray-900 mb-6 text-center">Example Persons</h2>
+          <div className="grid grid-cols-3 gap-8">
+            {examplePersons.map((person) => (
+              <button
+                key={person.name}
+                onClick={() => handleExamplePersonClick(person)}
+                className="p-6 border rounded-xl hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105 hover:shadow-lg"
+              >
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-indigo-500">
+                    <img 
+                      src={person.imagePath} 
+                      alt={person.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/150';
+                      }}
+                    />
+                  </div>
+                  <p className="font-medium text-lg text-gray-900">{person.name}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-white p-8 rounded-xl shadow-sm space-y-6">
             {Object.entries(formData).map(([key, value]) => {
               if (key === 'productivity_unproductive' || key === 'productivity_productive' || key === 'willingness_to_learn_ready' || key === 'willingness_to_learn_very_ready' || key === 'temporal_availability_low' || key === 'temporal_availability_medium') {
                 return null;
               }
               return (
-                <div key={key} className="mb-4">
-                  <label htmlFor={key} className="block text-sm font-medium text-gray-700">
-                    {key.replace(/([A-Z])/g, ' $1').charAt(0).toUpperCase() + key.replace(/([A-Z])/g, ' $1').slice(1)}
+                <div key={key} className="mb-6">
+                  <label htmlFor={key} className="block text-sm font-medium text-gray-700 mb-2">
+                    {key
+                      .split('_')
+                      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(' ')}
                   </label>
                   <select
                     name={key}
                     id={key}
                     value={value}
                     onChange={handleDropdownChange}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   >
                     {dropdownOptions[key]?.map(option => (
                       <option key={option.value} value={option.value}>
@@ -206,15 +301,15 @@ function App() {
               );
             })}
 
-            <div className="mb-4">
-              <label htmlFor="productivity" className="block text-sm font-medium text-gray-700">
+            <div className="mb-6">
+              <label htmlFor="productivity" className="block text-sm font-medium text-gray-700 mb-2">
                 Productivity
               </label>
               <select
                 name="productivity"
                 id="productivity"
                 onChange={handleDropdownChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
                 {dropdownOptions.productivity.map(option => (
                   <option key={option.value} value={option.value}>
@@ -223,15 +318,15 @@ function App() {
                 ))}
               </select>
             </div>
-            <div className="mb-4">
-              <label htmlFor="temporal_availability" className="block text-sm font-medium text-gray-700">
+            <div className="mb-6">
+              <label htmlFor="temporal_availability" className="block text-sm font-medium text-gray-700 mb-2">
                 Temporal Availability
               </label>
               <select
                 name="temporal_availability"
                 id="temporal_availability"
                 onChange={handleDropdownChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
                 {dropdownOptions.temporal_availability.map(option => (
                   <option key={option.value} value={option.value}>
@@ -240,15 +335,15 @@ function App() {
                 ))}
               </select>
             </div>
-            <div className="mb-4">
-              <label htmlFor="willingness_to_learn" className="block text-sm font-medium text-gray-700">
+            <div className="mb-6">
+              <label htmlFor="willingness_to_learn" className="block text-sm font-medium text-gray-700 mb-2">
                 Willingness To Learn
               </label>
               <select
                 name="willingness_to_learn"
                 id="willingness_to_learn"
                 onChange={handleDropdownChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
                 {dropdownOptions.willingness_to_learn.map(option => (
                   <option key={option.value} value={option.value}>
