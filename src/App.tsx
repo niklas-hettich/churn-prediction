@@ -202,6 +202,7 @@ function App() {
   const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'productivity') {
+      setSelectedProductivity(Number(value));
       if (Number(value) === 0) {
         setFormData(prev => ({
           ...prev,
@@ -222,6 +223,7 @@ function App() {
         }));
       }
     } else if (name === 'willingness_to_learn') {
+      setSelectedWillingnessToLearn(Number(value));
       if (Number(value) === 0) {
         setFormData(prev => ({
           ...prev,
@@ -242,6 +244,7 @@ function App() {
         }));
       }
     } else if (name === 'temporal_availability') {
+      setSelectedTemporalAvailability(Number(value));
       if (Number(value) === 0) {
         setFormData(prev => ({
           ...prev,
